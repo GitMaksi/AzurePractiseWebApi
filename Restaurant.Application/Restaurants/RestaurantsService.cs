@@ -26,4 +26,12 @@ public class RestaurantsService(IRestaurantRepository restaurantRepository,
         logger.LogInformation($"Get restaurant function finished, id: {id}");
         return mapper.Map<RestaurantDto?>(restaurant);
     }
+
+    public async Task<int> CreateRestaurantAsync(CreateRestaurantDto createRestaurantDto)
+    {
+        logger.LogInformation($"Creating resource");
+        var restaurantDomainModel = mapper.Map<Domain.Entities.Restaurant>(createRestaurantDto);
+        logger.LogInformation($"Mapped resource completed");
+        return await restaurantRepository.CreateAsync(restaurantDomainModel);
+    }
 }

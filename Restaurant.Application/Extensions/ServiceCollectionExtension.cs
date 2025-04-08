@@ -4,12 +4,12 @@ using Restaurant.Domain.Repositories;
 
 namespace Restaurant.Application.Extensions;
 
-public static class ServiceCollectionExtenstion
+public static class ServiceCollectionExtension
 {
     public static void AddApplication(this IServiceCollection services)
     {
         services.AddScoped<IRestaurantsService, RestaurantsService>();
 
-        services.AddAutoMapper(typeof(ServiceCollectionExtenstion).Assembly);
+        services.AddAutoMapper(typeof(ServiceCollectionExtension).Assembly);
     }
 }
