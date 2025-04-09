@@ -1,25 +1,28 @@
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Restaurant.Application.Restaurants;
-using Restaurant.Application.Restaurants.Dtos;
+using Restaurant.Application.Restaurants.Commands.CreateRestaurant;
+using Restaurant.Application.Restaurants.Commands.DeleteRestaurant;
+using Restaurant.Application.Restaurants.Queries.GetAllRestaurants;
+using Restaurant.Application.Restaurants.Queries.GetRestaurantById;
 
 namespace Restaurant.WebApi.Controllers;
 
 [ApiController]
 [Route("api/restaurants")]
-public class RestaurantController(IRestaurantsService restaurantsService, ILogger<RestaurantController> logger)
+public class RestaurantController(ILogger<RestaurantController> logger, IMediator mediator)
     : ControllerBase
 {
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        var restaurants = await restaurantsService.GetAllRestaurants();
+        var restaurants = await mediator.Send(new GetAllRestaurantQuery());
         return Ok(restaurants);
     }
 
     [HttpGet("{restaurantId}")]
     public async Task<IActionResult> GetById([FromRoute] int restaurantId)
     {
-        var restaurant = await restaurantsService.GetRestaurantById(restaurantId);
+        var restaurant = await mediator.Send(new GetRestaurantByIdQuery(restaurantId));
         
         if (restaurant is null)
         {
@@ -32,13 +35,9 @@ public class RestaurantController(IRestaurantsService restaurantsService, ILogge
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateRestaurant([FromBody] CreateRestaurantDto createRestaurantDto)
+    public async Task<IActionResult> CreateRestaurant([FromBody] CreateRestaurantCommand createRestaurantCommand)
     {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
-        var restaurantId = await restaurantsService.CreateRestaurantAsync(createRestaurantDto);
+        var restaurantId = await  mediator.Send(createRestaurantCommand);
         return CreatedAtAction(nameof(GetById), new { restaurantId }, null);
     }
 
@@ -46,7 +45,11 @@ public class RestaurantController(IRestaurantsService restaurantsService, ILogge
     public async Task<IActionResult> DeleteRestaurant([FromRoute] int restaurantId)
     {
         logger.LogInformation($"Delete resource function called on resource id: {restaurantId}");
-        await restaurantsService.DeleteRestaurantAsync(restaurantId);
-        return Ok();
+        var isDeleted = await mediator.Send(new DeleteRestaurantCommand(restaurantId));
+        
+        if (isDeleted)
+            return NoContent();
+        
+        return NotFound();
     }
 }
