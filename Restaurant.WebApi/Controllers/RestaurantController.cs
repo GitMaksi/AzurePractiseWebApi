@@ -37,4 +37,12 @@ public class RestaurantController(IRestaurantsService restaurantsService, ILogge
         var restaurantId = await restaurantsService.CreateRestaurantAsync(createRestaurantDto);
         return CreatedAtAction(nameof(GetById), new { restaurantId }, null);
     }
+
+    [HttpDelete("{restaurantId}")]
+    public async Task<IActionResult> DeleteRestaurant([FromRoute] int restaurantId)
+    {
+        logger.LogInformation($"Delete resource function called on resource id: {restaurantId}");
+        await restaurantsService.DeleteRestaurantAsync(restaurantId);
+        return Ok();
+    }
 }

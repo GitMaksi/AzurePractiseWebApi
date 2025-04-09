@@ -34,4 +34,11 @@ public class RestaurantsService(IRestaurantRepository restaurantRepository,
         logger.LogInformation($"Mapped resource completed");
         return await restaurantRepository.CreateAsync(restaurantDomainModel);
     }
+
+    public async Task DeleteRestaurantAsync(int id)
+    {
+        logger.LogInformation($"Delete resource");
+        await restaurantRepository.DeleteAsync(id);
+        logger.LogInformation($"Resource  deleted, id: {id}");
+    }
 }
