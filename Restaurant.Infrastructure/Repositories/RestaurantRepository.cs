@@ -34,4 +34,7 @@ public class RestaurantRepository(RestaurantsDbContext dbContext)
         dbContext.Restaurants.Remove(resourceToDelete);
         await dbContext.SaveChangesAsync();
     }
+
+    public async Task SaveChangesAsync()
+    => await dbContext.SaveChangesAsync();
 }
