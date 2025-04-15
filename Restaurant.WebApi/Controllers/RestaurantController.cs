@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Restaurant.Application.Restaurants.Commands.CreateRestaurant;
 using Restaurant.Application.Restaurants.Commands.DeleteRestaurant;
 using Restaurant.Application.Restaurants.Commands.ModifyRestaurant;
+using Restaurant.Application.Restaurants.Dtos;
 using Restaurant.Application.Restaurants.Queries.GetAllRestaurants;
 using Restaurant.Application.Restaurants.Queries.GetRestaurantById;
 
@@ -14,14 +15,16 @@ public class RestaurantController(ILogger<RestaurantController> logger, IMediato
     : ControllerBase
 {
     [HttpGet]
-    public async Task<IActionResult> GetAll()
+    public async Task<ActionResult<IEnumerable<RestaurantDto>>> GetAll()
     {
         var restaurants = await mediator.Send(new GetAllRestaurantQuery());
         return Ok(restaurants);
     }
 
     [HttpGet("{restaurantId}")]
-    public async Task<IActionResult> GetById([FromRoute] int restaurantId)
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<RestaurantDto>> GetById([FromRoute] int restaurantId)
     {
         var restaurant = await mediator.Send(new GetRestaurantByIdQuery(restaurantId));
         
@@ -36,6 +39,8 @@ public class RestaurantController(ILogger<RestaurantController> logger, IMediato
     }
 
     [HttpPost]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> CreateRestaurant([FromBody] CreateRestaurantCommand createRestaurantCommand)
     {
         var restaurantId = await  mediator.Send(createRestaurantCommand);
