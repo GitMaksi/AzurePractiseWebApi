@@ -1,6 +1,7 @@
 using Restaurant.Application.Extensions;
 using Restaurant.Infrastructure.Extensions;
 using Restaurant.Infrastructure.Seeders;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +13,16 @@ builder.Services.AddInfrastructureServices(builder.Configuration);
 builder.Services.AddServices();
 builder.Services.AddRepositories();
 builder.Services.AddApplication();
+
+//Serilog setup
+builder.Host.UseSerilog((hostingContext, loggerConfiguration) =>
+{
+    loggerConfiguration
+        .MinimumLevel.Override("Microsoft",  Serilog.Events.LogEventLevel.Warning)
+        .MinimumLevel.Override("Microsoft.EntityFrameworkCore",  Serilog.Events.LogEventLevel.Information)
+        .WriteTo.File("Log/Restaurant/ .log", rollingInterval: RollingInterval.Day, rollOnFileSizeLimit: true)
+        .WriteTo.Console();
+});
 
 var app = builder.Build();
 
@@ -27,7 +38,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.MapControllers();
+//Redirecting HTTP to HTTPS
 app.UseHttpsRedirection();
+
+//Mapping controllers
+app.MapControllers();
 
 app.Run();
