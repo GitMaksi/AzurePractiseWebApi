@@ -1,6 +1,7 @@
 using Restaurant.Application.Extensions;
 using Restaurant.Infrastructure.Extensions;
 using Restaurant.Infrastructure.Seeders;
+using Restaurant.WebApi.Middleware;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,6 +14,8 @@ builder.Services.AddInfrastructureServices(builder.Configuration);
 builder.Services.AddServices();
 builder.Services.AddRepositories();
 builder.Services.AddApplication();
+
+builder.Services.AddTransient<ErrorHandlingMiddleware>();
 
 //Serilog setup
 builder.Host.UseSerilog((hostingContext, loggerConfiguration) =>
@@ -31,6 +34,9 @@ var scope = app.Services.CreateScope();
 var seeder = scope.ServiceProvider.GetRequiredService<IRestaurantSeeder>();
 await seeder.Seed();
 
+//adding middlewares
+app.UseMiddleware<ErrorHandlingMiddleware>();
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -40,6 +46,8 @@ if (app.Environment.IsDevelopment())
 
 //Redirecting HTTP to HTTPS
 app.UseHttpsRedirection();
+
+app.UseSerilogRequestLogging();
 
 //Mapping controllers
 app.MapControllers();

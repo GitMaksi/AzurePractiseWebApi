@@ -3,7 +3,7 @@ using MediatR;
 
 namespace Restaurant.Application.Restaurants.Commands.ModifyRestaurant;
 
-public record ModifyRestaurantCommand : IRequest<bool>
+public record ModifyRestaurantCommand : IRequest
 {
     [JsonIgnore]
     public int Id { get; set; }

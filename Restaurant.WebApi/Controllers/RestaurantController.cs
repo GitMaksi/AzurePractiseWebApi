@@ -28,12 +28,6 @@ public class RestaurantController(ILogger<RestaurantController> logger, IMediato
     {
         var restaurant = await mediator.Send(new GetRestaurantByIdQuery(restaurantId));
         
-        if (restaurant is null)
-        {
-            logger.LogError($"Restaurant not found, id: {restaurantId}");
-            return NotFound();
-        }
-        
         logger.LogInformation($"Get restaurant function returned id: {restaurantId}");
         return Ok(restaurant);
     }
@@ -51,23 +45,16 @@ public class RestaurantController(ILogger<RestaurantController> logger, IMediato
     public async Task<IActionResult> DeleteRestaurant([FromRoute] int restaurantId)
     {
         logger.LogInformation($"Delete resource function called on resource id: {restaurantId}");
-        var isDeleted = await mediator.Send(new DeleteRestaurantCommand(restaurantId));
-        
-        if (isDeleted)
-            return NoContent();
-        
-        return NotFound();
+        await mediator.Send(new DeleteRestaurantCommand(restaurantId));
+
+        return NoContent();
     }
 
     [HttpPatch("{restaurantId}")]
     public async Task<IActionResult> UpdateRestaurant([FromRoute]int restaurantId, [FromBody] ModifyRestaurantCommand request)
     {
         request.Id = restaurantId;
-        var modificationResult = await mediator.Send(request);
-        
-        if (modificationResult)
-            return NoContent();
-        
-        return NotFound();
+        await mediator.Send(request);
+        return NoContent();
     }
 }
