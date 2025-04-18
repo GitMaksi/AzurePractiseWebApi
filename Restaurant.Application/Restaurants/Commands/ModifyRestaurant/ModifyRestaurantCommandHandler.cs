@@ -13,7 +13,8 @@ public class ModifyRestaurantCommandHandler(ILogger<ModifyRestaurantCommandHandl
     {
         logger.LogInformation($"Modify restaurant function started, id: {request.Id}");
         var resourceToModify = await restaurantRepository.GetById(request.Id)
-            ?? throw new NotFoundException($"Resource {request.Id} not found");
+           ?? throw new NotFoundException(nameof(Domain.Entities.Restaurant),
+               request.Id.ToString());
         
         mapper.Map(request, resourceToModify);
         await restaurantRepository.SaveChangesAsync();

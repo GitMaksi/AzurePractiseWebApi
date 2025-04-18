@@ -11,8 +11,9 @@ public class DeleteRestaurantCommandHandler(ILogger<DeleteRestaurantCommandHandl
     public async Task Handle(DeleteRestaurantCommand request, CancellationToken cancellationToken)
     {
         logger.LogInformation($"Delete resource");
-        var resourceToDelete = await restaurantRepository.GetById(request.Id)
-            ?? throw new NotFoundException($"Resource {request.Id} not found");
+        _ = await restaurantRepository.GetById(request.Id)
+            ?? throw new NotFoundException(nameof(Domain.Entities.Restaurant),
+                request.Id.ToString());
         
         await restaurantRepository.DeleteAsync(request.Id);
         logger.LogInformation($"Resource  deleted, id: {request.Id}");

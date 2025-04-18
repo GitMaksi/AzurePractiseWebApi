@@ -15,7 +15,8 @@ public class GetRestaurantByIdQueryHandler(ILogger<GetAllRestaurantQueryHandler>
     {
         logger.LogInformation($"Get restaurant function started, id: {request.RestaurantId}");
         var restaurant = await restaurantRepository.GetById(request.RestaurantId) 
-            ?? throw new NotFoundException($"Resource {request.RestaurantId} not found");
+         ?? throw new NotFoundException(nameof(Domain.Entities.Restaurant),
+             request.RestaurantId.ToString());
         
         logger.LogInformation($"Get restaurant function finished, id: {request.RestaurantId}");
         return mapper.Map<RestaurantDto>(restaurant);
