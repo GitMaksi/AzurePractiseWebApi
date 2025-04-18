@@ -16,6 +16,7 @@ builder.Services.AddRepositories();
 builder.Services.AddApplication();
 
 builder.Services.AddTransient<ErrorHandlingMiddleware>();
+builder.Services.AddTransient<TimeTrackingMiddleware>();
 
 //Serilog setup
 builder.Host.UseSerilog((hostingContext, loggerConfiguration) =>
@@ -35,7 +36,8 @@ var seeder = scope.ServiceProvider.GetRequiredService<IRestaurantSeeder>();
 await seeder.Seed();
 
 //adding middlewares
-app.UseMiddleware<ErrorHandlingMiddleware>();
+app.UseMiddleware<ErrorHandlingMiddleware>()
+    .UseMiddleware<TimeTrackingMiddleware>();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
