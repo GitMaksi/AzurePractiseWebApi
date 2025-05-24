@@ -5,8 +5,8 @@ namespace Restaurant.Infrastructure.Persistence;
 
 public class RestaurantsDbContext(DbContextOptions<RestaurantsDbContext> options) : DbContext(options)
 {
-    internal DbSet<Domain.Entities.Restaurant> Restaurants { get; set; } 
-    internal DbSet<Dish> Dishes { get; set; }
+    public DbSet<Domain.Entities.Restaurant> Restaurants { get; set; } 
+    public DbSet<Dish> Dishes { get; set; }
     
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
